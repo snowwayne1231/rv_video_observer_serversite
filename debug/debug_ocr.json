@@ -1,0 +1,578 @@
+{
+    "_debug_history": {
+        "M057": [
+            {
+                "digits": [],
+                "ans_minute": 26,
+                "img_datetime": "C:\\Users\\snow.jhung\\rvProjects\\RV_video_observer\\server\\classes\\..\\debug/wrong_format_M057_1826_img_datetime.jpg"
+            },
+            {
+                "digits": [
+                    "1001001111111001111111111"
+                ],
+                "ans_minute": 26,
+                "img_datetime": "C:\\Users\\snow.jhung\\rvProjects\\RV_video_observer\\server\\classes\\..\\debug/wrong_format_M057_1826_img_datetime.jpg"
+            },
+            {
+                "digits": [],
+                "ans_minute": 27,
+                "img_datetime": "C:\\Users\\snow.jhung\\rvProjects\\RV_video_observer\\server\\classes\\..\\debug/wrong_format_M057_1827_img_datetime.jpg"
+            },
+            {
+                "digits": [],
+                "ans_minute": 27,
+                "img_datetime": "C:\\Users\\snow.jhung\\rvProjects\\RV_video_observer\\server\\classes\\..\\debug/wrong_format_M057_1827_img_datetime.jpg"
+            },
+            {
+                "digits": [],
+                "ans_minute": 27,
+                "img_datetime": "C:\\Users\\snow.jhung\\rvProjects\\RV_video_observer\\server\\classes\\..\\debug/wrong_format_M057_1827_img_datetime.jpg"
+            },
+            {
+                "digits": [],
+                "ans_minute": 28,
+                "img_datetime": "C:\\Users\\snow.jhung\\rvProjects\\RV_video_observer\\server\\classes\\..\\debug/wrong_format_M057_1828_img_datetime.jpg"
+            },
+            {
+                "digits": [
+                    "12312311111000000"
+                ],
+                "ans_minute": 28,
+                "img_datetime": "C:\\Users\\snow.jhung\\rvProjects\\RV_video_observer\\server\\classes\\..\\debug/wrong_format_M057_1828_img_datetime.jpg"
+            },
+            {
+                "digits": [],
+                "ans_minute": 28,
+                "img_datetime": "C:\\Users\\snow.jhung\\rvProjects\\RV_video_observer\\server\\classes\\..\\debug/wrong_format_M057_1828_img_datetime.jpg"
+            },
+            {
+                "digits": [],
+                "ans_minute": 30,
+                "img_datetime": "C:\\Users\\snow.jhung\\rvProjects\\RV_video_observer\\server\\classes\\..\\debug/wrong_format_M057_1830_img_datetime.jpg"
+            },
+            {
+                "digits": [],
+                "ans_minute": 31,
+                "img_datetime": "C:\\Users\\snow.jhung\\rvProjects\\RV_video_observer\\server\\classes\\..\\debug/wrong_format_M057_1831_img_datetime.jpg"
+            },
+            {
+                "digits": [],
+                "ans_minute": 31,
+                "img_datetime": "C:\\Users\\snow.jhung\\rvProjects\\RV_video_observer\\server\\classes\\..\\debug/wrong_format_M057_1831_img_datetime.jpg"
+            },
+            {
+                "digits": [],
+                "ans_minute": 31,
+                "img_datetime": "C:\\Users\\snow.jhung\\rvProjects\\RV_video_observer\\server\\classes\\..\\debug/wrong_format_M057_1831_img_datetime.jpg"
+            }
+        ],
+        "M051": [
+            {
+                "digits": [
+                    "01"
+                ],
+                "ans_minute": 27,
+                "img_datetime": "C:\\Users\\snow.jhung\\rvProjects\\RV_video_observer\\server\\classes\\..\\debug/wrong_format_M051_1827_img_datetime.jpg"
+            }
+        ],
+        "M055": [],
+        "M056": [],
+        "M059": [
+            {
+                "digits": [],
+                "ans_minute": 26,
+                "img_datetime": "C:\\Users\\snow.jhung\\rvProjects\\RV_video_observer\\server\\classes\\..\\debug/wrong_format_M059_1826_img_datetime.jpg"
+            },
+            {
+                "digits": [
+                    "123011370700000000011"
+                ],
+                "ans_minute": 27,
+                "img_datetime": "C:\\Users\\snow.jhung\\rvProjects\\RV_video_observer\\server\\classes\\..\\debug/wrong_format_M059_1827_img_datetime.jpg"
+            },
+            {
+                "digits": [],
+                "ans_minute": 27,
+                "img_datetime": "C:\\Users\\snow.jhung\\rvProjects\\RV_video_observer\\server\\classes\\..\\debug/wrong_format_M059_1827_img_datetime.jpg"
+            },
+            {
+                "digits": [],
+                "ans_minute": 27,
+                "img_datetime": "C:\\Users\\snow.jhung\\rvProjects\\RV_video_observer\\server\\classes\\..\\debug/wrong_format_M059_1827_img_datetime.jpg"
+            },
+            {
+                "digits": [],
+                "ans_minute": 28,
+                "img_datetime": "C:\\Users\\snow.jhung\\rvProjects\\RV_video_observer\\server\\classes\\..\\debug/wrong_format_M059_1828_img_datetime.jpg"
+            },
+            {
+                "digits": [],
+                "ans_minute": 28,
+                "img_datetime": "C:\\Users\\snow.jhung\\rvProjects\\RV_video_observer\\server\\classes\\..\\debug/wrong_format_M059_1828_img_datetime.jpg"
+            },
+            {
+                "digits": [],
+                "ans_minute": 30,
+                "img_datetime": "C:\\Users\\snow.jhung\\rvProjects\\RV_video_observer\\server\\classes\\..\\debug/wrong_format_M059_1830_img_datetime.jpg"
+            },
+            {
+                "digits": [],
+                "ans_minute": 31,
+                "img_datetime": "C:\\Users\\snow.jhung\\rvProjects\\RV_video_observer\\server\\classes\\..\\debug/wrong_format_M059_1831_img_datetime.jpg"
+            },
+            {
+                "digits": [],
+                "ans_minute": 31,
+                "img_datetime": "C:\\Users\\snow.jhung\\rvProjects\\RV_video_observer\\server\\classes\\..\\debug/wrong_format_M059_1831_img_datetime.jpg"
+            },
+            {
+                "digits": [],
+                "ans_minute": 31,
+                "img_datetime": "C:\\Users\\snow.jhung\\rvProjects\\RV_video_observer\\server\\classes\\..\\debug/wrong_format_M059_1831_img_datetime.jpg"
+            }
+        ],
+        "D051": [],
+        "D058": [],
+        "M054": [
+            {
+                "digits": [],
+                "ans_minute": 29,
+                "img_datetime": "C:\\Users\\snow.jhung\\rvProjects\\RV_video_observer\\server\\classes\\..\\debug/wrong_format_M054_1829_img_datetime.jpg"
+            },
+            {
+                "digits": [],
+                "ans_minute": 29,
+                "img_datetime": "C:\\Users\\snow.jhung\\rvProjects\\RV_video_observer\\server\\classes\\..\\debug/wrong_format_M054_1829_img_datetime.jpg"
+            },
+            {
+                "digits": [],
+                "ans_minute": 29,
+                "img_datetime": "C:\\Users\\snow.jhung\\rvProjects\\RV_video_observer\\server\\classes\\..\\debug/wrong_format_M054_1829_img_datetime.jpg"
+            }
+        ],
+        "M060": [],
+        "M058": [],
+        "N024": [],
+        "N026": [],
+        "M053": [],
+        "D025": [],
+        "D028": [],
+        "D001": [],
+        "D024": [],
+        "B022": []
+    },
+    "analyzing_B022": {
+        "total": 23,
+        "right": 22,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 1,
+        "wrong_time": 0,
+        "accuracy": 0.9565217391304348
+    },
+    "analyzing_D024": {
+        "total": 22,
+        "right": 21,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 1,
+        "wrong_time": 0,
+        "accuracy": 0.9545454545454546
+    },
+    "analyzing_D025": {
+        "total": 22,
+        "right": 19,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 3,
+        "wrong_time": 0,
+        "accuracy": 0.8636363636363636
+    },
+    "analyzing_D026": {
+        "total": 22,
+        "right": 22,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 0,
+        "wrong_time": 0,
+        "accuracy": 1.0
+    },
+    "analyzing_D055": {
+        "total": 22,
+        "right": 22,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 0,
+        "wrong_time": 0,
+        "accuracy": 1.0
+    },
+    "analyzing_D056": {
+        "total": 22,
+        "right": 22,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 0,
+        "wrong_time": 0,
+        "accuracy": 1.0
+    },
+    "analyzing_D057": {
+        "total": 22,
+        "right": 22,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 0,
+        "wrong_time": 0,
+        "accuracy": 1.0
+    },
+    "analyzing_D058": {
+        "total": 22,
+        "right": 16,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 3,
+        "wrong_time": 3,
+        "accuracy": 0.7272727272727273
+    },
+    "analyzing_D059": {
+        "total": 22,
+        "right": 22,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 0,
+        "wrong_time": 0,
+        "accuracy": 1.0
+    },
+    "analyzing_N016": {
+        "total": 22,
+        "right": 22,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 0,
+        "wrong_time": 0,
+        "accuracy": 1.0
+    },
+    "analyzing_N017": {
+        "total": 22,
+        "right": 22,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 0,
+        "wrong_time": 0,
+        "accuracy": 1.0
+    },
+    "analyzing_D021": {
+        "total": 22,
+        "right": 22,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 0,
+        "wrong_time": 0,
+        "accuracy": 1.0
+    },
+    "analyzing_D022": {
+        "total": 22,
+        "right": 22,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 0,
+        "wrong_time": 0,
+        "accuracy": 1.0
+    },
+    "analyzing_D023": {
+        "total": 21,
+        "right": 21,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 0,
+        "wrong_time": 0,
+        "accuracy": 1.0
+    },
+    "analyzing_D051": {
+        "total": 21,
+        "right": 20,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 1,
+        "wrong_time": 0,
+        "accuracy": 0.9523809523809523
+    },
+    "analyzing_D052": {
+        "total": 22,
+        "right": 22,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 0,
+        "wrong_time": 0,
+        "accuracy": 1.0
+    },
+    "analyzing_D001": {
+        "total": 20,
+        "right": 19,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 1,
+        "wrong_time": 0,
+        "accuracy": 0.95
+    },
+    "analyzing_D027": {
+        "total": 21,
+        "right": 20,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 0,
+        "wrong_time": 1,
+        "accuracy": 0.9523809523809523
+    },
+    "analyzing_D028": {
+        "total": 21,
+        "right": 20,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 1,
+        "wrong_time": 0,
+        "accuracy": 0.9523809523809523
+    },
+    "analyzing_D053": {
+        "total": 21,
+        "right": 20,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 0,
+        "wrong_time": 1,
+        "accuracy": 0.9523809523809523
+    },
+    "analyzing_D054": {
+        "total": 21,
+        "right": 19,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 0,
+        "wrong_time": 2,
+        "accuracy": 0.9047619047619048
+    },
+    "analyzing_D060": {
+        "total": 21,
+        "right": 19,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 0,
+        "wrong_time": 2,
+        "accuracy": 0.9047619047619048
+    },
+    "analyzing_N026": {
+        "total": 21,
+        "right": 17,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 4,
+        "wrong_time": 0,
+        "accuracy": 0.8095238095238095
+    },
+    "analyzing_M051": {
+        "total": 21,
+        "right": 7,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 11,
+        "wrong_time": 3,
+        "accuracy": 0.3333333333333333
+    },
+    "analyzing_M052": {
+        "total": 21,
+        "right": 21,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 0,
+        "wrong_time": 0,
+        "accuracy": 1.0
+    },
+    "analyzing_M057": {
+        "total": 21,
+        "right": 1,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 20,
+        "wrong_time": 0,
+        "accuracy": 0.047619047619047616
+    },
+    "analyzing_M060": {
+        "total": 21,
+        "right": 18,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 3,
+        "wrong_time": 0,
+        "accuracy": 0.8571428571428571
+    },
+    "analyzing_N006": {
+        "total": 21,
+        "right": 21,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 0,
+        "wrong_time": 0,
+        "accuracy": 1.0
+    },
+    "analyzing_N007": {
+        "total": 21,
+        "right": 21,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 0,
+        "wrong_time": 0,
+        "accuracy": 1.0
+    },
+    "analyzing_N022": {
+        "total": 21,
+        "right": 21,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 0,
+        "wrong_time": 0,
+        "accuracy": 1.0
+    },
+    "analyzing_M058": {
+        "total": 21,
+        "right": 15,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 6,
+        "wrong_time": 0,
+        "accuracy": 0.7142857142857143
+    },
+    "analyzing_M059": {
+        "total": 21,
+        "right": 3,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 18,
+        "wrong_time": 0,
+        "accuracy": 0.14285714285714285
+    },
+    "analyzing_N012": {
+        "total": 20,
+        "right": 20,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 0,
+        "wrong_time": 0,
+        "accuracy": 1.0
+    },
+    "analyzing_N013": {
+        "total": 20,
+        "right": 20,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 0,
+        "wrong_time": 0,
+        "accuracy": 1.0
+    },
+    "analyzing_N015": {
+        "total": 20,
+        "right": 20,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 0,
+        "wrong_time": 0,
+        "accuracy": 1.0
+    },
+    "analyzing_N020": {
+        "total": 21,
+        "right": 21,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 0,
+        "wrong_time": 0,
+        "accuracy": 1.0
+    },
+    "analyzing_N021": {
+        "total": 21,
+        "right": 21,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 0,
+        "wrong_time": 0,
+        "accuracy": 1.0
+    },
+    "analyzing_B001": {
+        "total": 20,
+        "right": 19,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 0,
+        "wrong_time": 1,
+        "accuracy": 0.95
+    },
+    "analyzing_M053": {
+        "total": 20,
+        "right": 16,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 4,
+        "wrong_time": 0,
+        "accuracy": 0.8
+    },
+    "analyzing_M054": {
+        "total": 21,
+        "right": 6,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 15,
+        "wrong_time": 0,
+        "accuracy": 0.2857142857142857
+    },
+    "analyzing_M055": {
+        "total": 20,
+        "right": 14,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 4,
+        "wrong_time": 2,
+        "accuracy": 0.7
+    },
+    "analyzing_M056": {
+        "total": 21,
+        "right": 16,
+        "no_panel": 1,
+        "no_datetime": 0,
+        "wrong_format": 4,
+        "wrong_time": 0,
+        "accuracy": 0.7619047619047619
+    },
+    "analyzing_N023": {
+        "total": 20,
+        "right": 20,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 0,
+        "wrong_time": 0,
+        "accuracy": 1.0
+    },
+    "analyzing_N024": {
+        "total": 20,
+        "right": 19,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 1,
+        "wrong_time": 0,
+        "accuracy": 0.95
+    },
+    "analyzing_N018": {
+        "total": 20,
+        "right": 20,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 0,
+        "wrong_time": 0,
+        "accuracy": 1.0
+    },
+    "analyzing_N019": {
+        "total": 20,
+        "right": 20,
+        "no_panel": 0,
+        "no_datetime": 0,
+        "wrong_format": 0,
+        "wrong_time": 0,
+        "accuracy": 1.0
+    }
+}

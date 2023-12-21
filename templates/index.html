@@ -1,0 +1,86 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flask WebSocket Data Update</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <script type="text/javascript">
+        var globalFrames = [];
+
+        window.onload = function() {
+            const socket = io('', { transports : ['websocket'] });
+            // const socket = io();
+            let t = 0
+
+            socket.on('data_update', function(data) {
+                console.log('data_update:', data)
+                const messageElement = document.getElementById('message');
+                messageElement.innerHTML = JSON.stringify(data);
+                const results = data.results || [];
+
+                for (let i =0; i < globalFrames.length; i++) {
+                    let loc = globalFrames[i];
+                    let obj = results.find((e) => e.id == loc.id);
+                    if (obj) {
+                        let minute = obj.minute;
+                        let wrongs = obj.wrongs;
+                        let _img = loc.querySelector('img')
+                        if (_img) {
+                            _img.src = _img.src.split('jpg')[0] + 'jpg?t=' + (t++)
+                        }
+                        
+                    }
+                }
+            });
+
+            socket.on('info', function(info) {
+                console.log('get_info_data: ', info)
+                const domFrames = document.getElementById('frames');
+                domFrames.innerHTML = '';
+                globalFrames = info.map(e => {
+                    const _nextDom = document.createElement('div');
+                    const _img = document.createElement('img');
+                    _nextDom.id = e.id;
+                    _nextDom.className = 'frame-zone';
+                    _img.src = e.img
+                    _nextDom.appendChild(_img);
+                    domFrames.appendChild(_nextDom);
+                    return _nextDom
+                });
+                
+            });
+
+            socket.on('connect', function() {
+                socket.emit('message', 'getinfo');
+            });
+        }
+        
+    </script>
+    <style>
+        #frames {
+            position: relative;
+            display: block;
+            width: 100vw;
+            height: 100vh;
+        }
+        .frame-zone {
+            position: relative;
+            width: 50%;
+            height: 360px;
+            display: inline-block;
+            text-align: center;
+        }
+        img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>WebSocket Data Update</h1>
+    <p id="message">Waiting for data...</p>
+    <div id="frames">
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,22 @@
+---
+  DEBUG: false
+
+  VIDEO:
+    URL: "http://43.206.22.82:8087/api/bavideo/getAllWhite"
+
+  YOLO:
+    GLANCE: "search_panel.pt"
+    FOCUSON: "get_datetime.pt"
+
+  HANDLER:
+    VIDEO_PROCESS_TIMEOUT: 72
+
+  DATABASE:
+    LOCATION: "127.0.0.1"
+    PORT: 4096
+    USER: localhost
+    PASSWORD: 123456
+
+  TESSERACT:
+    PATH: "Tesseract-OCR/tesseract.exe"
+
