@@ -99,6 +99,23 @@ class VideoDataset():
 
 
 
+    def refresh_data_from_url_videos(self, url_videos:list):
+        videos = self.construct_videos
+        map_vidx = self.map_video_index
+        for _vdata in url_videos:
+            _vid = _vdata.get('vid', None)
+            _addr = _vdata.get('addr', None)
+            _flag = _vdata.get('flag', VideoFlagENum.CLOSE)
+            if _vid is None or _addr is None:
+                continue
+            idx = map_vidx.get(_vid, -1)
+            if idx >= 0 and idx < len(videos):
+                videos[idx]['url'] = _addr
+                videos[idx]['flag'] = VideoFlagENum(_flag)
+
+
+
+
     def get_construct_info(self) -> list[dict]:
         return [self.get_dict_by_keys(_, ['id', 'img', 'flag', 'wrongs', 'warning']) for _ in self.construct_videos]
     
@@ -153,12 +170,11 @@ class VideoDataset():
     
 
 
-    def get_process_status_by_images(self, yolo_images:any, minute:int) -> VideoProcessStatusEnum:
+    def get_process_status(self, minute:int, depth_yolo:int) -> VideoProcessStatusEnum:
         dt_now = datetime.utcnow()
-        length_imgs = len(yolo_images)
-        if length_imgs == 0:
+        if depth_yolo == 0:
             return VideoProcessStatusEnum.NO_PANEL
-        elif length_imgs == 1:
+        elif depth_yolo == 1:
             return VideoProcessStatusEnum.NO_DATETIME
         elif check_minute_normally(minute, dt_now.minute):
             return VideoProcessStatusEnum.MINUTE_FOUND
@@ -167,7 +183,10 @@ class VideoDataset():
         
 
 
-    def update_data_by_ocr_result(self, id:str, minute:int, digits:list[str], yolo_images:list[any], full_frame:any) -> bool:
+    def update_data_by_ocr_result(self, id:str, minute:int, digits:list[str], depth_yolo:int) -> bool:
+        """ update processed data into data center
+        
+        """
         pointer = self.get_video_construct_pointer_by_id(id)
         dt_now = datetime.utcnow()
         ontime = False
@@ -176,7 +195,7 @@ class VideoDataset():
         pointer['parsed_digits'] = digits
         pointer['last_timestamp'] = dt_now.strftime("%Y-%m-%d %H:%M:%S")
 
-        process_status = self.get_process_status_by_images(yolo_images, minute)
+        process_status = self.get_process_status(minute, depth_yolo)
 
         if process_status is VideoProcessStatusEnum.NO_PANEL or process_status is VideoProcessStatusEnum.NO_DATETIME:
             pointer['wrongs']['datetime'] += 1
@@ -207,17 +226,20 @@ class VideoDataset():
         self.refresh_history_by_video_construct(pointer)
 
         self.stamp_analyzing(id=id, process_status=process_status, ontime=ontime)
-        # dubug logging
-        if self.debug_mode and process_status is not VideoProcessStatusEnum.MINUTE_FOUND:
+        
+        return ontime
+    
+
+
+    def debug_logging(self, id:str, full_frame:any, minute:int, yolo_images:list, digits:list, depth_yolo:int):
+        if self.debug_mode:
             self.logging_while_update_video_data(
                 id=id,
-                process_status=process_status, 
+                process_status=self.get_process_status(minute, depth_yolo), 
                 image=full_frame,
                 yolo_images=yolo_images,
                 digits=digits
             )
-
-        return ontime
 
 
 
