@@ -1,0 +1,12 @@
+**/node_modules
+README.md
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.coverage
+.coverage.*
+.cache
+*.cover
+*.log
+.git

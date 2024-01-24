@@ -33,6 +33,7 @@ frozenlist==1.4.0
 fsspec==2023.6.0
 gevent==23.9.1
 greenlet==2.0.2
+gunicorn==21.2.0
 h11==0.14.0
 h2==4.1.0
 hpack==4.0.0
@@ -82,7 +83,7 @@ pytorch-lightning==1.9.5
 pytz==2023.3
 PyYAML==6.0.1
 Quart==0.19.3
-redis==5.0.1
+redis==5.0.0
 regex==2023.8.8
 requests==2.31.0
 safetensors==0.3.2
@@ -95,9 +96,9 @@ sympy==1.12
 taskgroup==0.0.0a4
 timm==0.9.5
 tomli==2.0.1
-torch==1.13.1+cpu
+torch==1.13.1
 torchmetrics==1.0.3
-torchvision==0.14.1+cpu
+torchvision==0.14.1
 tqdm==4.66.1
 trio==0.22.2
 trio-websocket==0.11.1

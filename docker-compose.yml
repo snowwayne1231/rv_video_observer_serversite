@@ -1,0 +1,72 @@
+version: '3'
+
+networks:
+  observer-net:
+    driver: bridge
+    enable_ipv6: false
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.18.0.0/16
+          gateway: 172.18.0.1
+    internal: false
+
+
+
+services:
+  redis: 
+    networks:
+      - observer-net
+    image: redis
+    container_name: redis
+    read_only: false
+    restart: always
+    command: ["redis-server", "--client-output-buffer-limit", "slave 836870912 836870912 30 pubsub 836870912 836870912 30"]
+    logging:
+      driver: json-file
+      options:
+        max-size: 20m
+    # ports:
+    #   - '6379:6379'
+
+
+  observer:
+    networks:
+      - observer-net
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    container_name: video-observer
+    ports:
+      - "5000:5000"
+    logging:
+      driver: json-file
+      options:
+        max-size: 160m
+    depends_on:
+      - redis
+
+    stop_signal: SIGINT
+    restart: always
+
+
+  receiver:
+    networks:
+      - observer-net
+    environment:
+      - C_FORCE_ROOT=true
+    build:
+      context: .
+      dockerfile: Dockerfile-celery
+      target: celery-builder
+    container_name: video-celery-rtmp-receiver
+    logging:
+      driver: json-file
+      options:
+        max-size: 20m
+    depends_on:
+      - redis
+      - observer
+    restart: always
+

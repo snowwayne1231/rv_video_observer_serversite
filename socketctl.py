@@ -9,9 +9,11 @@ import bg_celery.tasks as celery_task
 import threading
 import os
 import json
-import multiprocessing
-import concurrent
+# import multiprocessing
+# import concurrent
 import tempfile
+import tracemalloc
+import linecache
 
 
 
@@ -21,6 +23,9 @@ def create_video_socket(app):
     _is_debug_mode = app.config['DEBUG']
     remote_video_url = app.config['VIDEO']['URL']
     remote_videos_data = get_remote_video_data(remote_video_url, _is_debug_mode)
+
+    if _is_debug_mode:
+        tracemalloc.start()
     
     video_data = VideoDataset(remote_videos_data, debug_mode=_is_debug_mode)
     sio = VideoSocketIO(app, video_data)
@@ -64,14 +69,13 @@ class VideoSocketIO(SocketIO):
     evt_exit_background = threading.Event()
     evt_video_handling = threading.Event()
 
-    tmpdirname = ''
     tmp_hourly_refresh = 0
     celery_frame_tasks = []
 
 
 
     def __init__(self, app, data_ctl: VideoDataset = None):
-        super().__init__(app, async_mode='threading', cors_allowed_origins="*")
+        super().__init__(app, async_mode='threading', cors_allowed_origins="*", allow_unsafe_werkzeug=True)
         # super().__init__(app, async_mode='eventlet', cors_allowed_origins="*")
         self.flask_app = app
         self.data_ctl = data_ctl
@@ -104,6 +108,7 @@ class VideoSocketIO(SocketIO):
         self.evt_video_handling.set()
         for cft in self.celery_frame_tasks:
             cft.revoke()
+        celery_task.app.control.purge()
         self.celery_frame_tasks = []
 
 
@@ -122,16 +127,21 @@ class VideoSocketIO(SocketIO):
 
         with tempfile.TemporaryDirectory() as tmpdirname:
             self.flask_app.logger.info('Created Temporary Dicrectory : {}'.format(tmpdirname))
-            self.tmpdirname = tmpdirname
+            # self.tmpdirname = tmpdirname
             while not self.evt_exit_background.is_set():
                 pid_urls = self.data_ctl.get_urls(is_activate=True)
-                self.celery_frame_tasks = [celery_task.capture_video.delay(_['id'], _['url'], tmpdirname) for _ in pid_urls]
+                self.celery_frame_tasks = [celery_task.capture_video.delay(_['id'], _['url']) for _ in pid_urls]
                 self.evt_video_handling = threading.Event()
                 self.while_working_by_celery_tasks(timeout=TIMEOUT_CYCLE_CAPTURING)
                 self.reload_tasks()
                 self.check_video_status_hourly()
+                # 
+                
+                if self.flask_app.config['DEBUG']:
+                    snapshot = tracemalloc.take_snapshot()
+                    self.debug_display_memo_top(snapshot)
 
-            self.tmpdirname = ''
+            # self.tmpdirname = ''
         
         self.flask_app.logger.info('Background Task Stopped.')
         self.debug_logging()
@@ -140,6 +150,7 @@ class VideoSocketIO(SocketIO):
 
     def while_working_by_celery_tasks(self, timeout:float=60):
         dt_start = datetime.utcnow()
+        self.next_round_done_video_id_map = {}
         
         while not self.evt_exit_background.is_set():
             tasks = self.celery_frame_tasks
@@ -148,10 +159,13 @@ class VideoSocketIO(SocketIO):
             results = [task.get() for task in tasks if task.ready()]
             _len_results = len(results)
             if _len_results > 0:
-                updated_ids = self.handle_video_frames() # it will take a long time to execute
+                new_results = [_ for _ in results if self.next_round_done_video_id_map.get(_['pid'], None) is None and _['opened']]
+                updated_ids = self.handle_video_tasks(new_results) # it will take a long time to execute
                 if len(updated_ids) == 0:
                     self.evt_exit_background.wait(2)
                 else:
+                    for _pid in updated_ids:
+                        self.next_round_done_video_id_map[_pid] = True
                     video_data_update_to_fronted = self.data_ctl.get_ws_video_data_by_ids(updated_ids)
                     self.emit('video_data_update', video_data_update_to_fronted)
             else:
@@ -170,73 +184,68 @@ class VideoSocketIO(SocketIO):
 
 
 
-    def handle_video_frames(self) -> list[str]:
+    def handle_video_tasks(self, task_results:list=[]) -> list[str]:
         # MAX_HANDLE_FRAME = 50
-        if not self.tmpdirname:
-            return
-        
         dt_now = datetime.utcnow()
-        ocr_obr = self.ocr_observer
-        tmp_map_id_data = {}
-        _is_debug_mode = self.flask_app.config['DEBUG']
         num_done_frame = 0
+        updated_ids = []
         
         try:
-
-            list_files_in_tmp = os.listdir(self.tmpdirname)
-
-            for file in list_files_in_tmp:
+            for task_res in task_results:
                 if self.evt_video_handling.is_set():
-                    [os.remove(os.path.join(self.tmpdirname, _f)) for _f in os.listdir(self.tmpdirname)]
                     break
-                full_file_path = os.path.join(self.tmpdirname, file)
-                [_id, _minute, _leftover] = file.split('_', 2)
+                pid = task_res['pid']
+                task_minute = task_res['minute']
+                task_frames = task_res['frames']
+                if minutes_difference(dt_now.minute, int(task_minute)) < 2:
 
-                if minutes_difference(dt_now.minute, int(_minute)) < 2:
-
-                    idata = tmp_map_id_data.get(_id, {'ontime': False, 'pubimg': False, 'xyxy': []})
-                    # ontime = find one on real time,  pubimg = which is already saved a frame recently,  xyxy = temp save for yolo search position
-                    if idata and idata['ontime']:
-                        continue
-
-                    if len(idata['xyxy']) == 4:
-                        minute_parsed, digits = ocr_obr.get_parsed_frame_by_path_and_position(path_image=full_file_path, xyxy=idata['xyxy'])
-                        depth_yolo = 2
-                    else:
-                        image_frame, minute_parsed, digits, yolo_find_images, xyxy_datetime = ocr_obr.get_parsed_frame_by_path(path_image=full_file_path)
-                        depth_yolo = len(yolo_find_images)
-
-                        idata['xyxy'] = xyxy_datetime
-
-                        if idata['pubimg'] is False:
-                            self.data_ctl.save_image(id=_id, img=image_frame)
-                            idata['pubimg'] = True
-                        
-                        if _is_debug_mode:
-                            self.data_ctl.debug_logging(id=_id, full_frame=image_frame, minute=minute_parsed, yolo_images=yolo_find_images, digits=digits, depth_yolo=depth_yolo,)
-                    
-                            
-                    # print('minute_parsed: ', minute_parsed)
-                    # print('depth_yolo: ', depth_yolo)
-                    idata['ontime'] = self.data_ctl.update_data_by_ocr_result(
-                        id=_id,
-                        minute=minute_parsed,
-                        digits=digits,
-                        depth_yolo=depth_yolo,
-                    )
-                    
-                    tmp_map_id_data[_id] = idata
-                    num_done_frame += 1
-
-                os.remove(full_file_path)
+                    parsed_minutes = self.handle_frames(pid, task_frames)
+                    num_done_frame += len(parsed_minutes)
+                    updated_ids.append(pid)
                 
         except Exception as err:
             self.flask_app.logger.info(str(err))
+            # self.reload_tasks()
+            # self.exit_background_ocrtask()
         
-        updated_ids = list(tmp_map_id_data.keys())
         spend_seconds = (datetime.utcnow() - dt_now).total_seconds()
-        self.flask_app.logger.info('[handle_video_frames] spend secods: {},  total handle files: {}  updated ids: {}'.format(spend_seconds, num_done_frame, len(updated_ids)))
+        self.flask_app.logger.info('[handle_video_tasks] spend secods: {},  total handle files: {}  updated ids: {}'.format(spend_seconds, num_done_frame, len(updated_ids)))
         return updated_ids
+
+
+
+    def handle_frames(self, pid:str, frames:list):
+        result_minuts = []
+        ocr_obr = self.ocr_observer
+        _tmp_xyxy = []
+        _depth_yolo = 0
+
+        for frame in frames:
+
+            if len(_tmp_xyxy) == 4:
+                minute_parsed, digits = ocr_obr.get_parsed_digits_by_frame_and_position(frame, _tmp_xyxy)
+                _depth_yolo = 2
+            else:
+                image_frame, minute_parsed, digits, yolo_find_images, xyxy_datetime = ocr_obr.get_parsed_frame(frame)
+                _depth_yolo = len(yolo_find_images)
+                _tmp_xyxy = xyxy_datetime
+
+                self.data_ctl.save_image(id=pid, img=image_frame)
+                
+                # self.data_ctl.debug_logging(id=pid, full_frame=image_frame, minute=minute_parsed, yolo_images=yolo_find_images, digits=digits, depth_yolo=_depth_yolo)
+            result_minuts.append(minute_parsed)
+
+            is_ontime = self.data_ctl.update_data_by_ocr_result(
+                id=pid,
+                minute=minute_parsed,
+                digits=digits,
+                depth_yolo=_depth_yolo,
+            )
+
+            if is_ontime:
+                break
+
+        return result_minuts
 
 
 
@@ -250,12 +259,38 @@ class VideoSocketIO(SocketIO):
                 accuracies.append(acc)
             else:
                 print('{} : {}'.format(_k, logs[_k]))
-
-        print('All Mean Accuracy: {}%'.format(round(sum(accuracies) *100 / len(accuracies))) )
+        
+        if len(accuracies) > 0:
+            print('All Mean Accuracy: {}%'.format(round(sum(accuracies) *100 / len(accuracies))) )
         
         if self.flask_app.config['DEBUG']:
             with open(os.path.abspath(os.path.dirname(__file__)) + '/debug/debug_ocr.json', 'w', encoding='utf-8') as f:
                 json.dump(logs, f, ensure_ascii=False, indent=4)
+
+
+
+    def debug_display_memo_top(self, snapshot, key_type='lineno', limit=10):
+        print(" [ TOP Memory Stats ] ")
+        snapshot = snapshot.filter_traces((
+            tracemalloc.Filter(False, "<frozen importlib._bootstrap>"),
+            tracemalloc.Filter(False, "<unknown>"),
+        ))
+        top_stats = snapshot.statistics(key_type)
+
+        print(" -- Show Top {} lines".format(limit))
+        for index, stat in enumerate(top_stats[:limit], 1):
+            frame = stat.traceback[0]
+            print("#{}: {}:{}:  size: {:.1f} KiB".format(index, frame.filename, frame.lineno, stat.size / 1024))
+            line = linecache.getline(frame.filename, frame.lineno).strip()
+            if line:
+                print('    ', line)
+
+        other = top_stats[limit:]
+        if other:
+            size = sum(stat.size for stat in other)
+            print("other length: {}  |  other size: {:.1f} KiB".format(len(other), size / 1024))
+        total = sum(stat.size for stat in top_stats)
+        print("Total allocated size: {:.1f} KiB".format(total / 1024))
 
         
 

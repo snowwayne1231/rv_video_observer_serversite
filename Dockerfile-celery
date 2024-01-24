@@ -1,0 +1,18 @@
+FROM python:3.9 as celery-builder
+
+RUN mkdir -p /video_observer_celery
+COPY ./bg_celery /video_observer_celery/bg_celery
+COPY ./__init__.py /video_observer_celery/__init__.py
+WORKDIR /video_observer_celery
+
+RUN apt-get update
+RUN apt-get upgrade -y
+RUN apt-get install ffmpeg libsm6 libxext6 libgl1 -y
+RUN pip install celery==5.3.5
+RUN pip install opencv-python==4.8.0.76
+RUN pip install numpy==1.25.2
+RUN pip install redis==5.0.0
+
+ENV REDIS_ALIAS=redis
+
+CMD celery -A bg_celery.tasks worker --loglevel=WARNING --concurrency=16 --purge --discard

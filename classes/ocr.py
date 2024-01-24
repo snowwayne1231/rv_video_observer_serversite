@@ -235,10 +235,10 @@ class OCRObserver():
         if xyxy[0] == xyxy[2]:
             return None
         return image[xyxy[1]: xyxy[3], xyxy[0]: xyxy[2]]
+    
 
 
-
-    def get_parsed_frame_by_path(self, path_image:str) -> tuple[Any, int, list[str], list[Any], list]:
+    def get_parsed_frame(self, frame) -> tuple[Any, int, list[str], list[Any], list]:
         """ parse the image by yolo and OCR algorithm then output results 
 
         return (
@@ -249,19 +249,18 @@ class OCRObserver():
             target_xyxy:  list[float] ( final target position ),
         )
         """
-        
-        img = cv2.imread(path_image)
+
         parsed_minute = -1
         list_digits = []
         yolo_finds = []
         target_xyxy = []
         
         # now = datetime.utcnow()
-        croped, xyxy = self.crope_panel_from_frame(img)
+        croped, xyxy = self.crope_panel_from_frame(frame)
         
         if croped is not None:
             yolo_finds.append(croped)
-            annotat = Annotator(img)
+            annotat = Annotator(frame)
             annotat.box_label(xyxy, 'panel', color=(32,64,255))
 
             img_datetime, dt_xyxy = self.get_datetime_from_panel(croped)
@@ -282,22 +281,37 @@ class OCRObserver():
 
 
             parsed_minute = self.parse_minute_algo(list_digits)
-            img = annotat.result()
+            frame = annotat.result()
         
 
-        return img, parsed_minute, list_digits, yolo_finds, target_xyxy
-    
+        return frame, parsed_minute, list_digits, yolo_finds, target_xyxy
 
 
-    def get_parsed_frame_by_path_and_position(self, path_image:str, xyxy:list):
-        """ simply get result for OCR final step
-        
+
+    def get_parsed_frame_by_path(self, path_image:str) -> tuple[Any, int, list[str], list[Any], list]:
+        """ parse the image by yolo and OCR algorithm then output results 
         """
+        
         img = cv2.imread(path_image)
-        img_datatime = self.get_croped_image_by_position(image=img, xyxy=xyxy)
+        return self.get_parsed_frame(img)
+
+
+
+    def get_parsed_digits_by_frame_and_position(self, frame, xyxy:list):
+        """ simply get digital result for OCR final step
+        """
+        img_datatime = self.get_croped_image_by_position(image=frame, xyxy=xyxy)
         list_digits = self.lib_extract_img_to_list(img_datatime)
         parsed_minute = self.parse_minute_algo(list_digits)
         return parsed_minute, list_digits
+    
+
+
+    def get_parsed_digits_by_path_and_position(self, path_image:str, xyxy:list):
+        """ simply get digital result for OCR final step
+        """
+        img = cv2.imread(path_image)
+        return self.get_parsed_digits_by_frame_and_position(img, xyxy)
 
 
 

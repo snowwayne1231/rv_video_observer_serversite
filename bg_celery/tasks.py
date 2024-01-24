@@ -2,16 +2,26 @@ from celery import Celery
 from datetime import datetime
 import cv2
 import json
+import pickle
 import os
+import numpy as np
 
 os.environ.setdefault('FORKED_BY_MULTIPROCESSING', '1')
+os.environ.setdefault('CELERY_TASK_ACKS_LATE', 'True')
+os.environ.setdefault('CELERY_BROKER_MAXMEMORY_POLICY', '"allkeys-lru')
+os.environ.setdefault('CELERY_BROKER_MAXMEMORY', '2048M')
+os.environ.setdefault('CELERY_WORKER_PREFETCH_MULTIPLIER', '1')
+
+docker_network_alias = os.environ.get('REDIS_ALIAS', 'localhost')
+# print('[Network] Redis Alias Name: ', docker_network_alias)
 
 app = Celery('tasks')
 app.conf.update(
-    broker_url = 'redis://localhost:6379/0',
-    result_backend = 'redis://localhost:6379/0',
-    result_serializer = 'json',
-    accept_content = ['application/json'],
+    broker_url = 'redis://{}:6379/0'.format(docker_network_alias),
+    result_backend = 'redis://{}:6379/0'.format(docker_network_alias),
+    result_serializer = 'pickle',
+    task_serializer = 'pickle',
+    accept_content = ['application/json', 'pickle'],
     enable_utc = True,
     result_expires = 30,
     # task_reject_on_worker_lost = True,
@@ -20,18 +30,18 @@ app.conf.update(
 
 
 @app.task
-def capture_video(pid: str, rtmp_url: str, dir_location: str) -> dict[str, any]:
+def capture_video(pid: str, rtmp_url: str) -> dict[str, any]:
     """Async task to capture frame from rtmp url 
 
     :pid : a unique key name for live streaming room
     :rtmp_url : a url used by cv2.VideoCapture to catch live streaming frames
-    :dir_location : an absolute system file path where temporary file has saved
 
     Return:
     {
         pid: String,
         opened: Boolean,
         frames: String[],
+        minute: Integer,
     }
     """
 
@@ -39,10 +49,7 @@ def capture_video(pid: str, rtmp_url: str, dir_location: str) -> dict[str, any]:
     MAX_FRAME_LENGTH = 3
     length_frame = 0
     last_dt = datetime.utcnow()
-    result = {'pid': pid, 'opened': True, 'frames': []}
-
-    if not os.path.isdir(dir_location):
-        raise Exception('Not Found Directory: {}. '.format(dir_location))
+    result = {'pid': pid, 'opened': True, 'frames': [], 'minute': -1}
 
     cap = cv2.VideoCapture(rtmp_url)
     
@@ -60,10 +67,8 @@ def capture_video(pid: str, rtmp_url: str, dir_location: str) -> dict[str, any]:
         if ret:
 
             last_dt = now
-            jpg_name = '{}_{}_{}.jpg'.format(pid, now.minute, now.second)
-            full_path = os.path.join(dir_location, jpg_name)
-            cv2.imwrite(full_path, frame)
-            result['frames'].append(str(full_path))
+            result['frames'].append(frame)
+            result['minute'] = now.minute
             length_frame += 1
         else:
             break
