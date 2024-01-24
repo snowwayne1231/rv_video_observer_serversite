@@ -11,6 +11,7 @@ os.environ.setdefault('CELERY_TASK_ACKS_LATE', 'True')
 os.environ.setdefault('CELERY_BROKER_MAXMEMORY_POLICY', '"allkeys-lru')
 os.environ.setdefault('CELERY_BROKER_MAXMEMORY', '2048M')
 os.environ.setdefault('CELERY_WORKER_PREFETCH_MULTIPLIER', '1')
+os.environ.setdefault('CELERYD_TASK_TIME_LIMIT', '60')
 
 docker_network_alias = os.environ.get('REDIS_ALIAS', 'localhost')
 # print('[Network] Redis Alias Name: ', docker_network_alias)

@@ -14,6 +14,7 @@ import json
 import tempfile
 import tracemalloc
 import linecache
+import gc
 
 
 
@@ -108,7 +109,9 @@ class VideoSocketIO(SocketIO):
         self.evt_video_handling.set()
         for cft in self.celery_frame_tasks:
             cft.revoke()
+        del self.celery_frame_tasks
         celery_task.app.control.purge()
+        gc.collect()
         self.celery_frame_tasks = []
 
 
@@ -151,6 +154,7 @@ class VideoSocketIO(SocketIO):
     def while_working_by_celery_tasks(self, timeout:float=60):
         dt_start = datetime.utcnow()
         self.next_round_done_video_id_map = {}
+        video_data_update_to_fronted = []
         
         while not self.evt_exit_background.is_set():
             tasks = self.celery_frame_tasks
@@ -181,6 +185,9 @@ class VideoSocketIO(SocketIO):
                 video_data_update_to_fronted = self.data_ctl.get_ws_video_data_by_ids(not_open_ids)
                 self.emit('video_data_update', video_data_update_to_fronted)
                 break
+        
+        del video_data_update_to_fronted
+        del self.next_round_done_video_id_map
 
 
 
