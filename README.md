@@ -13,32 +13,31 @@ whether datetime is keep right in the live videos
 * Redis (https://redis.io/)
 
 ---
-## Server site
 
 
-### Runing:
-* 1. Install and Launch Redis.
-** 1.1 By Docker:
+## 2. Runing:
+* Install and Launch Redis.
+By Docker:
 ```shell
 docker pull redis/redis-stack
 docker run -d --name [redis-stack] -p 6379:6379 -p 8001:8001 redis/redis-stack:latest
 docker start [redis-stack]
 ```
-** 1.2 Basic on redhot:
+Basic on redhot:
 ```shell
 sudo apt-get update
 sudo apt-get install redis
 redis-server /etc/redis/myconfig.conf
 ```
-** 1.3 Basic on centos:
+Basic on centos:
 ```shell
 sudo yum install epel-release
 sudo yum install redis -y
 sudo service redis start
 ```
 
-* 2. Install python 3.9 and later.
-** 2.1 install or check python 3.9
+* Install python 3.9 and later.
+Install or check python 3.9
 ```shell
 wget https://www.python.org/ftp/python/3.9.7/Python-3.9.7.tgz
 tar zxvf Python-3.9.7.tgz
@@ -48,7 +47,7 @@ make
 sudo make altinstall
 python3.9 --version
 ```
-** 2.2 check openssl version
+Check openssl version
 ```shell
 openssl version
 ```
@@ -67,15 +66,15 @@ sudo mv /usr/bin/openssl ~/tmp
 sudo ln -s /usr/local/openssl/bin/openssl /usr/bin/openssl
 ```
 
-* 3. create new user for this project
+* Create new user for this project
 ```shell
 sudo useradd vobserver
 sudo passwd vobserver
 su vobserver
 ```
 
-* 4. Project files
-** 4.1 git clone
+* Project files
+Git clone
 ```shell
 cd /[some-where]
 mkdir rv-video-observer
@@ -83,8 +82,7 @@ cd rv-video-observer
 git clone https://github.com/snowwayne1231/rv_video_observer_serversite.git
 ```
 
-* 5. Build up a python virual environment
-** 5.1
+* Build up a python virual environment
 ```shell
 python3.9 -m venv venv
 source venv/bin/activate
@@ -92,14 +90,11 @@ cd rv_video_observer_serversite
 pip install -r requeirements.txt
 ```
 
-
 * Run Main flask app.
 ```shell
 cd server
 flask --app app run --debug
-
-or
-
+# or
 python app.py
 ```
 
@@ -112,21 +107,27 @@ celery -A bg_celery.tasks worker --loglevel=WARNING --concurrency=12 --purge --d
 
 * Docker Compose
 ```shell
+docker build --tag=rv/video/observer/core:1.0.0 .
 docker-compose up -d
+```
+
+
+* Upgrades
+
+```Shell
+docker-compose up -d --build observer
+docker image rm rv/video/observer/app:1.x.x
 ```
 
 
 
 * some docker cmd
 ```shell
-docker build -t video-observer .
-
 
 docker pull redis
 docker network create -d bridge --attachable observer-net
 docker run -dp 6379:6379 --name ob-redis redis
 docker network connect observer-net ob-redis --alias ob-redis 
-
 
 docker run --rm -p 5000:5000 --expose 5000 --network observer-net -it --entrypoint /bin/bash video-observer
 

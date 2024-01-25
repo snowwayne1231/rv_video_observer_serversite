@@ -1,0 +1,13 @@
+FROM rv/video/observer/core:1.0.0
+
+WORKDIR /video_observer
+COPY . /video_observer/
+
+ENV REDIS_ALIAS=redis
+EXPOSE 5000
+
+# CMD celery -A bg_celery.tasks worker --loglevel=INFO --concurrency=12 --purge --discard
+# CMD ["python3", "app.py"]
+CMD ["gunicorn", "--worker-class", "eventlet", "-w", "1", "-b", "0.0.0.0:5000", "app:app"]
+# CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
+
