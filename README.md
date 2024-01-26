@@ -36,6 +36,7 @@ sudo yum install redis -y
 sudo service redis start
 ```
 
+---
 * Install python 3.9 and later.
 Install or check python 3.9
 ```shell
@@ -66,6 +67,7 @@ sudo mv /usr/bin/openssl ~/tmp
 sudo ln -s /usr/local/openssl/bin/openssl /usr/bin/openssl
 ```
 
+---
 * Create new user for this project
 ```shell
 sudo useradd vobserver
@@ -73,6 +75,7 @@ sudo passwd vobserver
 su vobserver
 ```
 
+---
 * Project files
 Git clone
 ```shell
@@ -82,6 +85,7 @@ cd rv-video-observer
 git clone https://github.com/snowwayne1231/rv_video_observer_serversite.git
 ```
 
+---
 * Build up a python virual environment
 ```shell
 python3.9 -m venv venv
@@ -90,6 +94,7 @@ cd rv_video_observer_serversite
 pip install -r requeirements.txt
 ```
 
+---
 * Run Main flask app.
 ```shell
 cd server
@@ -98,20 +103,21 @@ flask --app app run --debug
 python app.py
 ```
 
+---
 * Run Celery workers for capture live streaming frames.
 ```shell
 cd server
 celery -A bg_celery.tasks worker --loglevel=WARNING --concurrency=12 --purge --discard
 ```
 
-
-* Docker Compose
+---
+* Docker Compose On Production env
 ```shell
 docker build --tag=rv/video/observer/core:1.0.0 .
 docker-compose up -d
 ```
 
-
+---
 * Upgrades
 
 ```Shell
@@ -119,8 +125,7 @@ docker-compose up -d --build observer
 docker image rm rv/video/observer/app:1.x.x
 ```
 
-
-
+---
 * some docker cmd
 ```shell
 
@@ -133,3 +138,43 @@ docker run --rm -p 5000:5000 --expose 5000 --network observer-net -it --entrypoi
 
 docker container ls --format "table {{.ID}}\t{{.Names}}\t{{.Ports}}" -a
 ```
+
+---
+
+## 3. UAT Deployment record
+* 請SE協助打開與 Docker 相關的網域
+
+---
+* UAT環境 有外網限制, 必須加入 proxy:
+修改 Dockerfile 加入:
+``` shell
+ENV http_proxy http://xxxx
+ENV https_proxy http://xxxx
+# before apt-get update
+```
+
+執行 build core
+``` shell
+export http_proxy="http://xxxx";
+export https_proxy="http://xxxx";
+
+docker build --tag=rv/video/observer/core:1.0.0 . --network host
+```
+
+修改 docker-compose.yml 
+``` shell
+# add parameter
+serveice
+  receiver
+    build
+      network: host
+      args:
+        - http_proxy: http://xxxx
+        - https_proxy: http://xxxx
+```
+執行 docker compose up
+``` shell
+docker-compose up -d
+```
+
+

@@ -1,6 +1,7 @@
 from PIL import Image
 from datetime import datetime
 from classes.timeformula import check_minute_normally
+from classes.internet import get_remote_video_data
 from enum import Enum
 import os
 import cv2
@@ -31,30 +32,43 @@ class VideoProcessStatusEnum(Enum):
 class VideoDataset():
     """ store all datainfo of videos. 
 
-    init parameter must be like [
-        {
-            vid: str,
-            flag: int,
-            addr: str,
-        },
-    ]
+    init parameter must be like 
+        url_data: a remote url from video data api,
+        debug_mode: whether is debug mode,
+        logger: specify logger for showing logs,
     """
     STR_DEBUG_LOG_HISTORY = '_debug_history'
     construct_videos = []
+    list_history_warning = []
     map_video_index = {}
     current_path = os.path.abspath(os.path.dirname(__file__))
+    url_remote_video_data = ''
     debug_mode = False
-    list_history_warning = []
+    show_logs = False
+    logger = None
 
     log_dev = {}
 
 
 
-    def __init__(self, url_videos:list, debug_mode:bool = False) -> None:
+    def __init__(self, url_data:str, debug_mode:bool = False, logger = None) -> None:
         self.debug_mode = debug_mode
         if debug_mode:
             self.log_dev[self.STR_DEBUG_LOG_HISTORY] = {}
-        self.load_data_from_url_videos(url_videos)
+        if logger is not None:
+            self.show_logs = True
+            self.logger = logger
+        self.url_remote_video_data = url_data
+        self.fetch_data_from_url(url_data)
+
+
+
+    def fetch_data_from_url(self, url:str = ''):
+        _video_url = self.url_remote_video_data if url == '' else url
+        self.logging('[PROCESS] Start Fetching Video Data From Url: {}'.format(_video_url))
+        remote_videos_data = get_remote_video_data(_video_url, self.debug_mode)
+        self.load_data_from_url_videos(remote_videos_data)
+        self.logging('[PROCESS] Loaded Video Data Length: {}'.format(len(remote_videos_data)))
 
 
 
@@ -99,7 +113,9 @@ class VideoDataset():
 
 
 
-    def refresh_data_from_url_videos(self, url_videos:list):
+    def refresh_video_data(self):
+        self.logging('[PROCESS] Start Refresh Video Data.')
+        url_videos = get_remote_video_data(self.url_remote_video_data, self.debug_mode)
         videos = self.construct_videos
         map_vidx = self.map_video_index
         for _vdata in url_videos:
@@ -112,6 +128,7 @@ class VideoDataset():
             if idx >= 0 and idx < len(videos):
                 videos[idx]['url'] = _addr
                 videos[idx]['flag'] = VideoFlagENum(_flag)
+        self.logging('[PROCESS] Refresh Video Data Done.')
 
 
 
@@ -216,7 +233,7 @@ class VideoDataset():
                 pointer['wrongs']['overtime'] = 0
             else:
                 pointer['wrongs']['overtime'] += 1
-        
+
 
         pointer['warning']['overtime'] = pointer['wrongs']['overtime'] > 2
         pointer['warning']['datetime'] = pointer['wrongs']['datetime'] > 4
@@ -228,12 +245,18 @@ class VideoDataset():
         self.stamp_analyzing(id=id, process_status=process_status, ontime=ontime)
         
         return ontime
-    
+
+
+
+    def logging(self, info:str):
+        if self.show_logs:
+            self.logger.info(info)
+
 
 
     def debug_logging(self, id:str, full_frame:any, minute:int, yolo_images:list, digits:list, depth_yolo:int):
         if self.debug_mode:
-            self.logging_while_update_video_data(
+            self.debug_logging_while_update_video_data(
                 id=id,
                 process_status=self.get_process_status(minute, depth_yolo), 
                 image=full_frame,
@@ -344,7 +367,9 @@ class VideoDataset():
 
 
 
-    def logging_while_update_video_data(self, id:str, process_status:VideoProcessStatusEnum, image:any, yolo_images:list[any], digits:list):
+    def debug_logging_while_update_video_data(self, id:str, process_status:VideoProcessStatusEnum, image:any, yolo_images:list[any], digits:list):
+        """ should be private function!
+        """
         if self.log_dev[self.STR_DEBUG_LOG_HISTORY].get(id, None) is None:
             self.log_dev[self.STR_DEBUG_LOG_HISTORY][id] = []
 

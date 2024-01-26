@@ -1,25 +1,22 @@
-from collections.abc import Callable, Iterable, Mapping
-from datetime import datetime, timedelta, timezone
 from typing import Any
 from ultralytics import YOLO
 from ultralytics.utils.plotting import Annotator
-
-
-# import keras_ocr
-import pytesseract
-import cv2
-import re
-import threading
-import multiprocessing
-import os
-import numpy as np
-# import ffmpeg
-
-# for parseq
-import torch
 from PIL import Image
 from parseq.strhub.data.module import SceneTextDataModule
 from classes.timeformula import minutes_difference
+
+import torch
+import pytesseract
+import cv2
+import re
+import os
+import numpy as np
+# import ffmpeg
+# import keras_ocr
+# for parseq
+# import threading
+# import multiprocessing
+
 
 
 
@@ -42,11 +39,13 @@ class OCRObserver():
 
     def __init__(self, flask_app) -> None:
         self.flask_app = flask_app
+        self.logging('[PROCESS] Start Load YOLO Models.')
         self.load_yolo()
-        self.setting_tesseract()
+        # self.setting_tesseract()
+        self.logging('[PROCESS] Start Load Parseq Models.')
         self.load_parseq()
 
-        self.logging(' * OCR Observer Loaded.')
+        self.logging('[PROCESS] * OCR Observer Loaded.')
 
 
 

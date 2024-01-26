@@ -1,7 +1,6 @@
 from flask_socketio import SocketIO, send, emit
 from classes.ocr import OCRObserver
 from classes.data import VideoDataset
-from classes.internet import get_remote_video_data
 from classes.timeformula import minutes_difference
 from datetime import datetime, timezone
 
@@ -23,12 +22,10 @@ import gc
 def create_video_socket(app):
     _is_debug_mode = app.config['DEBUG']
     remote_video_url = app.config['VIDEO']['URL']
-    remote_videos_data = get_remote_video_data(remote_video_url, _is_debug_mode)
-
     if _is_debug_mode:
         tracemalloc.start()
-    
-    video_data = VideoDataset(remote_videos_data, debug_mode=_is_debug_mode)
+
+    video_data = VideoDataset(url_data=remote_video_url, debug_mode=_is_debug_mode, logger=app.logger)
     sio = VideoSocketIO(app, video_data)
     
     
@@ -99,8 +96,8 @@ class VideoSocketIO(SocketIO):
 
 
     def reload_video_data(self):
-        remote_videos_data = get_remote_video_data(self.flask_app.config['VIDEO']['URL'])
-        self.data_ctl.load_data_from_url_videos(remote_videos_data)
+        # self.flask_app.logger.info('[PROCESS] Start Load Remote Video Data: {}'.format(self.flask_app.config['VIDEO']['URL']))
+        self.data_ctl.fetch_data_from_url()
         return self
     
 
@@ -115,13 +112,12 @@ class VideoSocketIO(SocketIO):
         self.celery_frame_tasks = []
 
 
-    
+
     def check_video_status_hourly(self):
         dt_now = datetime.utcnow()
         if dt_now.hour != self.tmp_hourly_refresh:
             self.tmp_hourly_refresh = dt_now.hour
-            remote_videos_data = get_remote_video_data(self.flask_app.config['VIDEO']['URL'])
-            self.data_ctl.refresh_data_from_url_videos(remote_videos_data)
+            self.data_ctl.refresh_video_data()
 
 
 

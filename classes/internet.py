@@ -84,6 +84,10 @@ def get_remote_video_data(url:str, _is_debug_mode:bool = False) -> list:
     """
     json_response = retry_request(url, max = 1 if _is_debug_mode else 3)
     vdatas = []
+    if json_response is None:
+        _remote_exception = 'Retry Request url:[ {} ] Is Failed.  Nothing Can Do.'.format(url)
+        print(_remote_exception)
+        raise Exception(_remote_exception)
 
     if isinstance(json_response, list) and len(json_response) > 0 and "vid" in json_response[0]:
         vdatas = json_response

@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, abort, make_response, send_from_directory
+from flask import Flask, request, render_template, make_response, send_from_directory
 from socketctl import create_video_socket
 import logging
 # import eventlet
@@ -51,13 +51,15 @@ def create_flask_app():
     def public_path(filename):
         return send_from_directory(os.path.join(current_path, 'public'), filename)
     
+    logging.info('[PROCESS] Created Flask App.')
+
     return app
 
 
 
 def create_merged_app(flask_app):
     sio = create_video_socket(flask_app)
-    
+    logging.info('[PROCESS] Created SocketIO Service and than Merge Apps.')
     return sio
 
 
