@@ -143,7 +143,9 @@ docker container ls --format "table {{.ID}}\t{{.Names}}\t{{.Ports}}" -a
 
 ## 3. UAT Deployment record
 * 請SE協助打開與 Docker 相關的網域
-
+- 1. linux apt-get 相關需要
+- 2. docker 相關需要
+- 3. pip 相關需要
 ---
 * UAT環境 有外網限制, 必須加入 proxy:
 修改 Dockerfile 加入:

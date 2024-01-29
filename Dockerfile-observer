@@ -2,6 +2,7 @@ FROM rv/video/observer/core:1.0.0
 
 WORKDIR /video_observer
 COPY . /video_observer/
+# VOLUME ["./configs", "/video_observer/configs"]
 
 ENV REDIS_ALIAS=redis
 EXPOSE 5000

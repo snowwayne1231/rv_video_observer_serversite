@@ -29,9 +29,11 @@ logging.config.dictConfig({
 
 def create_flask_app():
     current_path = os.path.abspath(os.path.dirname(__file__))
+    config_path = os.path.join(current_path, 'configs', 'config.yaml')
 
     app = Flask(__name__, static_folder="frontend/static")
-    with open(os.path.join(current_path, 'config.yaml')) as f:
+    logging.info('[PROCESS] Starting Flask App. Loading config path: {}'.format(config_path))
+    with open(config_path) as f:
         cdata = yaml.safe_load(f.read())
         app.config.update(cdata)
 

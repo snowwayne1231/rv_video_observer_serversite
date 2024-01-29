@@ -64,9 +64,12 @@ def _get_model_class(key):
 
 def get_pretrained_weights(experiment):
     try:
-        url = _WEIGHTS_URL[experiment]
+        url = _WEIGHTS_URL.get(experiment, None)
+        if url is None:
+            url = experiment
     except KeyError:
         raise InvalidModelError(f"No pretrained weights found for '{experiment}'") from None
+    
     return torch.hub.load_state_dict_from_url(url=url, map_location='cpu', check_hash=True)
 
 
@@ -78,7 +81,11 @@ def create_model(experiment: str, pretrained: bool = False, **kwargs):
     ModelClass = _get_model_class(experiment)
     model = ModelClass(**config)
     if pretrained:
-        model.load_state_dict(get_pretrained_weights(experiment))
+        weight_file = kwargs.get('weight_file', None)
+        if weight_file is None:
+            model.load_state_dict(get_pretrained_weights(experiment))
+        else:
+            model.load_state_dict(torch.load(weight_file))
     return model
 
 

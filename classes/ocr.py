@@ -13,7 +13,6 @@ import os
 import numpy as np
 # import ffmpeg
 # import keras_ocr
-# for parseq
 # import threading
 # import multiprocessing
 
@@ -46,6 +45,7 @@ class OCRObserver():
         self.load_parseq()
 
         self.logging('[PROCESS] * OCR Observer Loaded.')
+        
 
 
 
@@ -73,8 +73,9 @@ class OCRObserver():
     def load_parseq(self):
         # self.parseq = torch.hub.load('./baudm/parseq', 'parseq', pretrained=True).eval()
         _local_path = os.path.join(os.path.abspath(os.path.dirname(__file__)) , '..', 'parseq')
-        self.parseq = torch.hub.load(_local_path, 'parseq', pretrained=True, source='local').eval()
-        # self.parseq = torch.load(os.path.join(os.path.abspath(os.path.dirname(__file__))  ,'model', 'parseq-bb5792a6.pt'))
+        _pt_file_path = os.path.join(os.path.abspath(os.path.dirname(__file__)) , '..', 'model', 'parseq.pt')
+        self.parseq = torch.hub.load(_local_path, 'parseq', pretrained=True, source='local', weight_file=_pt_file_path).eval()
+        
         self.parseq_img_transform = SceneTextDataModule.get_transform(self.parseq.hparams.img_size)
     
 
