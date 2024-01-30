@@ -1,0 +1,14 @@
+
+services:
+  observer:
+    environment:
+      - http_proxy=
+      - https_proxy=
+      - HTTP_PROXY=
+      - HTTPS_PROXY=
+  receiver:
+    build:
+      network: host
+      args:
+        - HTTP_PROXY=
+        - HTTPS_PROXY=

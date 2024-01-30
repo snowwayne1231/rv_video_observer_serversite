@@ -37,11 +37,6 @@ services:
       dockerfile: Dockerfile-observer
     image: rv/video/observer/app:1.0.2
     container_name: video-observer
-    environment:
-      - http_proxy=
-      - https_proxy=
-      - HTTP_PROXY=
-      - HTTPS_PROXY=
     logging:
       driver: json-file
       options:
