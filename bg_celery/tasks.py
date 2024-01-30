@@ -50,29 +50,36 @@ def capture_video(pid: str, rtmp_url: str) -> dict[str, any]:
     MAX_FRAME_LENGTH = 3
     length_frame = 0
     last_dt = datetime.utcnow()
-    result = {'pid': pid, 'opened': True, 'frames': [], 'minute': -1}
+    result = {'pid': pid, 'opened': False, 'frames': [], 'minute': -1}
 
-    cap = cv2.VideoCapture(rtmp_url)
-    
-    if not cap.isOpened():
-        result['opened'] = False
-        return result
-    
+    try:
 
-    while length_frame < MAX_FRAME_LENGTH:
-        ret, frame = cap.read()
-        now = datetime.utcnow()
-        if (now - last_dt).total_seconds() < SECOND_INTERVAL:
-            continue
+        cap = cv2.VideoCapture(rtmp_url)
         
-        if ret:
+        if not cap.isOpened():
+            return result
 
-            last_dt = now
-            result['frames'].append(frame)
-            result['minute'] = now.minute
-            length_frame += 1
-        else:
-            break
+        while length_frame < MAX_FRAME_LENGTH:
+            ret, frame = cap.read()
+            now = datetime.utcnow()
+            if (now - last_dt).total_seconds() < SECOND_INTERVAL:
+                continue
+            
+            if ret:
+
+                last_dt = now
+                result['frames'].append(frame)
+                result['minute'] = now.minute
+                length_frame += 1
+            else:
+                break
+
+        result['opened'] = True
+
+    except cv2.error as e:
+        print(e)
+        del result['frames']
+        result['frames'] = []
     
     return result
 
