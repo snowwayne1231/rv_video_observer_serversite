@@ -24,7 +24,7 @@ def create_video_socket(app):
     remote_video_url = app.config['VIDEO']['URL']
     if _is_debug_mode:
         tracemalloc.start()
-
+    
     video_data = VideoDataset(url_data=remote_video_url, debug_mode=_is_debug_mode, logger=app.logger)
     sio = VideoSocketIO(app, video_data)
     
@@ -169,17 +169,18 @@ class VideoSocketIO(SocketIO):
                     video_data_update_to_fronted = self.data_ctl.get_ws_video_data_by_ids(updated_ids)
                     self.emit('video_data_update', video_data_update_to_fronted)
             else:
-                self.evt_exit_background.wait(2)
+                self.evt_exit_background.wait(5)
             
             is_timeout = (datetime.utcnow() - dt_start).total_seconds() > timeout
 
             if _len_results >= length_tasks or is_timeout:
                 not_open_ids = [res['pid'] for res in results if not res['opened']]
-                self.flask_app.logger.info('Done A Cycle Capturing. Finished Length: {}'.format(length_tasks-len(not_open_ids)))
-
+                length_finish = length_tasks-len(not_open_ids)
+                self.flask_app.logger.info('Done A Cycle Capturing. Finished Length: {}'.format(length_finish))
                 self.data_ctl.set_error_with_not_open_videos(not_open_ids)
-                video_data_update_to_fronted = self.data_ctl.get_ws_video_data_by_ids(not_open_ids)
-                self.emit('video_data_update', video_data_update_to_fronted)
+                if length_finish > 0:
+                    video_data_update_to_fronted = self.data_ctl.get_ws_video_data_by_ids(not_open_ids)
+                    self.emit('video_data_update', video_data_update_to_fronted)
                 break
         
         del video_data_update_to_fronted

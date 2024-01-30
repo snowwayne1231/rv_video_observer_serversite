@@ -397,7 +397,7 @@ class VideoDataset():
         map_vi = self.map_video_index
         for _id in ids:
             _idx = map_vi.get(_id, -1)
-            if _idx:
+            if _idx >= 0:
                 self.construct_videos[_idx]['flag'] = VideoFlagENum.ERROR
     
 

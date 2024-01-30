@@ -163,7 +163,7 @@ export https_proxy="http://xxxx";
 docker build --tag=rv/video/observer/core:1.0.0 . --network host
 ```
 
-修改 docker-compose.yml 
+修改 docker-compose.yml (uat-docker-compose.yml)
 ``` shell
 # add parameter
 serveice
@@ -176,7 +176,7 @@ serveice
 ```
 執行 docker compose up
 ``` shell
-docker-compose up -d
+docker-compose -f docker-compose.yml -f uat-docker-compose.yml up -d
 ```
 
 
