@@ -20,6 +20,8 @@ import gc
 
 
 def create_video_socket(app):
+    """ create a socketIO mreged flask app 
+    """
     _is_debug_mode = app.config['DEBUG']
     remote_video_url = app.config['VIDEO']['URL']
     if _is_debug_mode:
@@ -59,7 +61,7 @@ def create_video_socket(app):
 
 
 class VideoSocketIO(SocketIO):
-    """
+    """ 
     """
     flask_app = None
     ocr_observer = None
@@ -69,12 +71,13 @@ class VideoSocketIO(SocketIO):
 
     tmp_hourly_refresh = 0
     celery_frame_tasks = []
+    dir_public = ''
 
 
 
     def __init__(self, app, data_ctl: VideoDataset = None):
         super().__init__(app, async_mode='threading', cors_allowed_origins="*", allow_unsafe_werkzeug=True)
-        # super().__init__(app, async_mode='eventlet', cors_allowed_origins="*")
+        self.dir_public = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'public')
         self.flask_app = app
         self.data_ctl = data_ctl
         self.ocr_observer = OCRObserver(app)
@@ -107,6 +110,10 @@ class VideoSocketIO(SocketIO):
         for cft in self.celery_frame_tasks:
             cft.revoke()
         del self.celery_frame_tasks
+        dir_public_tmp = os.path.join(self.dir_public, 'tmp')
+        for jpg_file in os.listdir(dir_public_tmp):
+            path_jpg = os.path.join(dir_public_tmp, jpg_file)
+            os.remove(path_jpg)
         celery_task.app.control.purge()
         gc.collect()
         self.celery_frame_tasks = []
@@ -124,24 +131,21 @@ class VideoSocketIO(SocketIO):
     def background_multiprocess(self):
         TIMEOUT_CYCLE_CAPTURING = self.flask_app.config['HANDLER'].get('VIDEO_PROCESS_TIMEOUT', 60)
 
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            self.flask_app.logger.info('Created Temporary Dicrectory : {}'.format(tmpdirname))
-            # self.tmpdirname = tmpdirname
-            while not self.evt_exit_background.is_set():
-                pid_urls = self.data_ctl.get_urls(is_activate=True)
-                self.celery_frame_tasks = [celery_task.capture_video.delay(_['id'], _['url']) for _ in pid_urls]
-                self.evt_video_handling = threading.Event()
-                self.while_working_by_celery_tasks(timeout=TIMEOUT_CYCLE_CAPTURING)
-                self.reload_tasks()
-                self.check_video_status_hourly()
-                # 
-                
-                if self.flask_app.config['DEBUG']:
-                    snapshot = tracemalloc.take_snapshot()
-                    self.debug_display_memo_top(snapshot)
+        while not self.evt_exit_background.is_set():
+            pid_urls = self.data_ctl.get_urls(is_activate=True)
+            self.celery_frame_tasks = [celery_task.capture_video.delay(_['id'], _['url'], self.dir_public) for _ in pid_urls]
+            self.evt_video_handling = threading.Event()
+            self.while_working_by_celery_tasks(timeout=TIMEOUT_CYCLE_CAPTURING)
+            self.reload_tasks()
+            self.check_video_status_hourly()
+            # 
+            
+            if self.flask_app.config['DEBUG']:
+                snapshot = tracemalloc.take_snapshot()
+                self.debug_display_memo_top(snapshot)
 
-            # self.tmpdirname = ''
-        
+            del pid_urls
+
         self.flask_app.logger.info('Background Task Stopped.')
         self.debug_logging()
 
@@ -175,10 +179,13 @@ class VideoSocketIO(SocketIO):
 
             if _len_results >= length_tasks or is_timeout:
                 not_open_ids = [res['pid'] for res in results if not res['opened']]
-                length_finish = length_tasks-len(not_open_ids)
-                self.flask_app.logger.info('Done A Cycle Capturing. Finished Length: {}'.format(length_finish))
-                self.data_ctl.set_error_with_not_open_videos(not_open_ids)
-                if length_finish > 0:
+                length_not_open = len(not_open_ids)
+
+                length_finish = len(self.next_round_done_video_id_map)
+                self.flask_app.logger.info('Done A Cycle Capturing. Finished Length: {} | Close Length: {} | Task Length: {}'.format(length_finish, length_not_open, length_tasks))
+
+                if length_not_open > 0:
+                    self.data_ctl.set_error_with_not_open_videos(not_open_ids)
                     video_data_update_to_fronted = self.data_ctl.get_ws_video_data_by_ids(not_open_ids)
                     self.emit('video_data_update', video_data_update_to_fronted)
                 break
@@ -224,13 +231,14 @@ class VideoSocketIO(SocketIO):
         _tmp_xyxy = []
         _depth_yolo = 0
 
-        for frame in frames:
-
+        for path_frame in frames:
             if len(_tmp_xyxy) == 4:
-                minute_parsed, digits = ocr_obr.get_parsed_digits_by_frame_and_position(frame, _tmp_xyxy)
+                # minute_parsed, digits = ocr_obr.get_parsed_digits_by_frame_and_position(frame, _tmp_xyxy)
+                minute_parsed, digits = ocr_obr.get_parsed_digits_by_path_and_position(path_frame, _tmp_xyxy)
                 _depth_yolo = 2
             else:
-                image_frame, minute_parsed, digits, yolo_find_images, xyxy_datetime = ocr_obr.get_parsed_frame(frame)
+                # image_frame, minute_parsed, digits, yolo_find_images, xyxy_datetime = ocr_obr.get_parsed_frame(frame)
+                image_frame, minute_parsed, digits, yolo_find_images, xyxy_datetime = ocr_obr.get_parsed_frame_by_path(path_frame)
                 _depth_yolo = len(yolo_find_images)
                 _tmp_xyxy = xyxy_datetime
 

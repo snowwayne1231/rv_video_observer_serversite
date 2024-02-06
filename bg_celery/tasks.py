@@ -31,7 +31,7 @@ app.conf.update(
 
 
 @app.task
-def capture_video(pid: str, rtmp_url: str) -> dict[str, any]:
+def capture_video(pid: str, rtmp_url: str, dir: str = '') -> dict[str, any]:
     """Async task to capture frame from rtmp url 
 
     :pid : a unique key name for live streaming room
@@ -51,6 +51,12 @@ def capture_video(pid: str, rtmp_url: str) -> dict[str, any]:
     length_frame = 0
     last_dt = datetime.utcnow()
     result = {'pid': pid, 'opened': False, 'frames': [], 'minute': -1}
+    path_save_file_dir = os.path.join(dir, 'tmp') if dir is not '' else None
+    _is_save_file = False
+    if path_save_file_dir is not None:
+        _is_save_file = True
+        if not os.path.isdir(path_save_file_dir):
+            os.makedirs(path_save_file_dir, exist_ok=True)
 
     try:
 
@@ -66,11 +72,18 @@ def capture_video(pid: str, rtmp_url: str) -> dict[str, any]:
                 continue
             
             if ret:
+                
+                if _is_save_file:
+                    file_name = '{}_{}.jpg'.format(pid, length_frame + 1)
+                    path_saved_file = str(os.path.join(path_save_file_dir, file_name))
+                    cv2.imwrite(path_saved_file, frame)
+                    result['frames'].append(path_saved_file)
+                else:
+                    result['frames'].append(frame)
 
-                last_dt = now
-                result['frames'].append(frame)
                 result['minute'] = now.minute
                 length_frame += 1
+                last_dt = now
             else:
                 break
 

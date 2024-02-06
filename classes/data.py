@@ -114,11 +114,11 @@ class VideoDataset():
 
 
     def refresh_video_data(self):
-        self.logging('[PROCESS] Start Refresh Video Data.')
+        self.logging('[PROCESS] Start Refresh Video Data. remote url: {}'.format(self.url_remote_video_data))
         url_videos = get_remote_video_data(self.url_remote_video_data, self.debug_mode)
         videos = self.construct_videos
         map_vidx = self.map_video_index
-        self.logging('[PROCESS] New Video Length: {}.'.format(len(url_videos)))
+        self.logging('[PROCESS] Loaded New Video Data Length: {}.'.format(len(url_videos)))
         for _vdata in url_videos:
             _vid = _vdata.get('vid', None)
             _addr = _vdata.get('addr', None)

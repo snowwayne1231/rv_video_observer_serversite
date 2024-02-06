@@ -1,9 +1,9 @@
 FROM python:3.9 as celery-builder
 
-RUN mkdir -p /video_observer_celery
-COPY ./bg_celery /video_observer_celery/bg_celery
-COPY ./__init__.py /video_observer_celery/__init__.py
-WORKDIR /video_observer_celery
+RUN mkdir -p /video_observer
+COPY ./bg_celery /video_observer/bg_celery
+COPY ./__init__.py /video_observer/__init__.py
+WORKDIR /video_observer
 
 RUN apt-get update
 RUN apt-get upgrade -y

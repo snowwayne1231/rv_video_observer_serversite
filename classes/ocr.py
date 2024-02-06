@@ -90,15 +90,16 @@ class OCRObserver():
     
 
 
-    def lib_extract_img_to_list(self, img):
-        
+    def lib_extract_img(self, img):
+        """ return  digits[] ,string_full_parsed 
+        """
         # texts = self.tesseract_parse(img)
-        
         texts = self.parseq_parse(img)
+        full_string = ''.join(texts)
         texts = [re.sub(r'[\D]+', '', _) for _ in texts]
         texts = [_ for _ in texts if _]
-        # self.logging('[lib_extract_img_to_list] texts: {}'.format(texts))
-        return texts
+        
+        return texts, full_string
 
 
 
@@ -125,7 +126,7 @@ class OCRObserver():
         results = []
         for txt in texts:
             _ = txt.lower()
-            if re.search(r'[gmt\+\-\s]{1,5}\d+', _):
+            if re.search(r'[gmt\+\-\s]{2,5}\d+', _):
                 results += re.split(r'[gmt\+\-\s]+\d{0,2}', _)
             else:
                 results.append(_)
@@ -244,14 +245,14 @@ class OCRObserver():
         return (
             img: numpy.array ( annotated image which from streaming frame ),
             minute: int ( a number between 0 - 99 parsed by frame ),
-            digits: list[str] ( ocr result it will only included digital ),
+            list_parsed_detail: list[str] ( ocr result it will only included digital ),
             yolo_finds:  list[numpy.array] ( image that every depth from yolo search ),
             target_xyxy:  list[float] ( final target position ),
         )
         """
 
         parsed_minute = -1
-        list_digits = []
+        list_parsed_detail = []
         yolo_finds = []
         target_xyxy = []
         
@@ -273,18 +274,19 @@ class OCRObserver():
                 # img_datetime = self.make_img_bigger(img_datetime, 2)
                 # img_datetime = self.make_img_identifiable(img_datetime)
 
-                list_digits = self.lib_extract_img_to_list(img_datetime)
+                list_digits, string_full = self.lib_extract_img(img_datetime)
 
             else:
                 img_center = self.get_img_center(croped, zoom=2)
-                list_digits = self.lib_extract_img_to_list(img_center)
+                list_digits, string_full = self.lib_extract_img(img_center)
 
 
             parsed_minute = self.parse_minute_algo(list_digits)
+            list_parsed_detail = list_digits + [string_full]
             frame = annotat.result()
         
 
-        return frame, parsed_minute, list_digits, yolo_finds, target_xyxy
+        return frame, parsed_minute, list_parsed_detail, yolo_finds, target_xyxy
 
 
 
@@ -301,9 +303,10 @@ class OCRObserver():
         """ simply get digital result for OCR final step
         """
         img_datatime = self.get_croped_image_by_position(image=frame, xyxy=xyxy)
-        list_digits = self.lib_extract_img_to_list(img_datatime)
+        list_digits, string_full = self.lib_extract_img(img_datatime)
         parsed_minute = self.parse_minute_algo(list_digits)
-        return parsed_minute, list_digits
+        list_parsed_detail = list_digits + [string_full]
+        return parsed_minute, list_parsed_detail
     
 
 

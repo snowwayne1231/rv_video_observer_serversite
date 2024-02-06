@@ -160,7 +160,7 @@ ENV https_proxy http://xxxx
 export http_proxy="http://xxxx";
 export https_proxy="http://xxxx";
 
-docker build --tag=rv/video/observer/core:1.0.0 . --network host
+docker build --no-cache --tag=rv/video/observer/core:1.0.0 . --network host
 ```
 
 修改 docker-compose.yml (uat-docker-compose.yml)

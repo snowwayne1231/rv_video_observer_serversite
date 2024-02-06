@@ -32,10 +32,11 @@ services:
       - observer-net
     volumes:
       - ./configs:/video_observer/configs
+      - ./public:/video_observer/public
     build:
       context: .
       dockerfile: Dockerfile-observer
-    image: rv/video/observer/app:1.0.2
+    image: rv/video/observer/app:1.0.3
     container_name: video-observer
     logging:
       driver: json-file
@@ -54,11 +55,13 @@ services:
       - observer-net
     environment:
       - C_FORCE_ROOT=true
+    volumes:
+      - ./public:/video_observer/public
     build:
       context: .
       dockerfile: Dockerfile-celery
       target: celery-builder
-    image: rv/video/observer/receiver/rtmp:1.0.0
+    image: rv/video/observer/receiver/rtmp:1.0.1
     container_name: video-celery-receiver-rtmp
     logging:
       driver: json-file
@@ -73,6 +76,7 @@ services:
     image: nginx:latest
     ports:
       - 80:80
+      - 443:443
     volumes:
       - ./nginx.conf.d:/etc/nginx/conf.d
     networks:

@@ -1,5 +1,6 @@
 **/node_modules
 *configs*
+*public*
 README.md
 __pycache__
 *.pyc
@@ -10,4 +11,5 @@ __pycache__
 .cache
 *.cover
 *.log
-.git
+*.git
+*.gitignore
