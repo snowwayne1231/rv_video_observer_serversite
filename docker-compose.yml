@@ -36,7 +36,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-observer
-    image: rv/video/observer/app:1.0.3
+    image: rv/video/observer/app:1.0.4
     container_name: video-observer
     logging:
       driver: json-file
@@ -61,7 +61,7 @@ services:
       context: .
       dockerfile: Dockerfile-celery
       target: celery-builder
-    image: rv/video/observer/receiver/rtmp:1.0.1
+    image: rv/video/observer/receiver/rtmp:1.0.2
     container_name: video-celery-receiver-rtmp
     logging:
       driver: json-file

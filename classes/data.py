@@ -219,8 +219,8 @@ class VideoDataset():
             pointer['wrongs']['datetime'] += 1
 
         elif process_status is VideoProcessStatusEnum.WRONG_FORMAT:
-            if pointer['warning']['format']:
-                pointer['wrongs']['format'] = 0
+            # if pointer['warning']['format']:
+            #     pointer['wrongs']['format'] = 0
             pointer['wrongs']['format'] += 1
             # pointer['minute_flexible'] = minute # trans by some algo
         
@@ -267,7 +267,16 @@ class VideoDataset():
 
 
 
-    def refresh_history_by_video_construct(self, vc_data:dict) -> None:
+    def refresh_history_by_video_construct(self, vc_data:dict) -> bool:
+        """ return whether have warning put into history record.
+        """
+        has_new = False
+        if len(self.list_history_warning) > 0:
+            last_history_record = self.list_history_warning[-1]
+            last_time = last_history_record['time']
+            if last_time == vc_data['last_timestamp']:
+                return has_new
+        
         for _wkey in vc_data['warning']:
             if vc_data['warning'][_wkey]:
                 self.list_history_warning.append({
@@ -277,10 +286,14 @@ class VideoDataset():
                     'digits': vc_data['parsed_digits'],
                     'time': vc_data['last_timestamp']
                 })
-        
+                has_new = True
+                break
+            
         if len(self.list_history_warning) > 50:
             self.list_history_warning = self.list_history_warning[-50:]
-    
+
+        return has_new
+
 
 
     def grab_history_warning(self, get_newest:bool=False) -> list[dict]:

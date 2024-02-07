@@ -51,10 +51,10 @@ def capture_video(pid: str, rtmp_url: str, dir: str = '') -> dict[str, any]:
     length_frame = 0
     last_dt = datetime.utcnow()
     result = {'pid': pid, 'opened': False, 'frames': [], 'minute': -1}
-    path_save_file_dir = os.path.join(dir, 'tmp') if dir is not '' else None
     _is_save_file = False
-    if path_save_file_dir is not None:
+    if dir != '':
         _is_save_file = True
+        path_save_file_dir = os.path.join(dir, 'tmp')
         if not os.path.isdir(path_save_file_dir):
             os.makedirs(path_save_file_dir, exist_ok=True)
 
