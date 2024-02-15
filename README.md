@@ -16,8 +16,8 @@ observing whether datetime which in live videos is keeping right
 ---
 
 
-## 2. Runing:
-* Install and Launch Redis.
+## 2. Install and Runing:
+* Redis:
 
 Basic on redhot:
 ```shell
@@ -200,3 +200,85 @@ docker-compose -f docker-compose.yml -f uat-docker-compose.yml up -d
 - `Dockerfile-observer`
 - `socketctl.py` **(Web socket controller)**
 
+---
+
+## 5. PROD maintenance
+* 切換 串流影片的設定來源 找到 configs/config.yaml 修改
+```yaml
+VIDEO:
+  URL: "http://43.206.22.82:8087/api/bavideo/getAllWhite" -> 欲修改的API位置
+```
+```shell
+docker-compose restart
+```
+
+---
+
+* 如果平板類型有大幅改動 想修正YOLO模型
+1. 先將新的 pt 權重檔放置 model/yolo/ 底下
+2. 接著修改 configs/config.yaml 檔案內的名稱使之對應
+```yaml
+YOLO:
+  GLANCE: "search_panel.pt" -> 用以快速辨識平板位置
+  FOCUSON: "get_datetime.pt" -> 從已找到的平板中找尋時間格式文字
+```
+```shell
+docker-compose restart
+```
+
+---
+
+* 修改nginx設定 找到檔案 nginx.conf.d/default.conf
+```nginx
+server {
+  listen 443 ssl;
+  listen [::]:443 ssl;
+
+  include /etc/nginx/conf.d/ssl/self-signed.conf; # SSL設定
+
+  # proxy to local main server
+  location / {
+    proxy_http_version 1.1;
+    proxy_pass http://observer:5000;
+  }
+}
+```
+
+* 修改SSL憑證 在 nginx.conf.d 目錄下
+nginx.conf.d
++-- ssl
+| -- `dhparam.pem` -> 替換 Diffie–Hellman 鑰匙
+| -- `ns.crt` -> 替換憑證檔
+| -- `ns.key` -> 替換金鑰
+| -- `self-signed.conf` -> 相關SSL設定
+```shell
+docker restart [nginx-container]
+```
+
+---
+
+* Docker容器如有設定問題(如network,extend)請建立新yaml檔
+```shell
+mkdir prod-docker.compose.yml
+```
+並依照需求更改 (以下為範例uat-docker-compose.yml)
+```yaml
+services:
+  observer:
+    environment:
+      - http_proxy=
+      - https_proxy=
+      - HTTP_PROXY=
+      - HTTPS_PROXY=
+  receiver:
+    build:
+      network: host
+      args:
+        - HTTP_PROXY=
+        - HTTPS_PROXY=
+```
+接著將舊有container清除並建立新設定
+```shell
+docker-compose down
+docker-compose -f docker-compose.yml -f prod-docker.compose.yml up -d
+```
