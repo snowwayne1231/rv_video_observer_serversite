@@ -1,28 +1,24 @@
 # RV Video Observer
 ---
 a tool for observing video's datetime
-whether datetime is keep right in the live videos
+observing whether datetime which in live videos is keeping right 
 
 ## 1. Requirement:
 ---
 * Python 3.9.x
 * YOLO v8  (https://github.com/ultralytics/ultralytics)
-* tesseract  (https://github.com/tesseract-ocr/tesseract)
-* pytesseract  (https://github.com/madmaze/pytesseract)
+* tesseract  (https://github.com/tesseract-ocr/tesseract)  (棄用)
+* pytesseract  (https://github.com/madmaze/pytesseract)  (棄用)
 * parseq  (https://github.com/baudm/parseq)
 * Redis (https://redis.io/)
+* Celery 5.3.x (https://docs.celeryq.dev/en/stable/)
 
 ---
 
 
 ## 2. Runing:
 * Install and Launch Redis.
-By Docker:
-```shell
-docker pull redis/redis-stack
-docker run -d --name [redis-stack] -p 6379:6379 -p 8001:8001 redis/redis-stack:latest
-docker start [redis-stack]
-```
+
 Basic on redhot:
 ```shell
 sudo apt-get update
@@ -129,13 +125,9 @@ docker image rm rv/video/observer/app:1.x.x
 * some docker cmd
 ```shell
 
-docker pull redis
 docker network create -d bridge --attachable observer-net
-docker run -dp 6379:6379 --name ob-redis redis
 docker network connect observer-net ob-redis --alias ob-redis 
-
 docker run --rm -p 5000:5000 --expose 5000 --network observer-net -it --entrypoint /bin/bash video-observer
-
 docker container ls --format "table {{.ID}}\t{{.Names}}\t{{.Ports}}" -a
 ```
 
@@ -179,4 +171,32 @@ serveice
 docker-compose -f docker-compose.yml -f uat-docker-compose.yml up -d
 ```
 
+
+---
+
+## 4. Folder Construct
+- bg_celery **(使用celery多線處理 rtmp 任務)**
+- classes 
+  | - `data.py`  **(儲存/取用data )**
+  | - `internet.py` **(外部request functions)**
+  | - `ocr.py` **(OCR algorithms of handling frame from RTMP)**
+  | - `timeformula.py` **(Functions of Specific time formats)**
+
+- configs **(Main service config)**
+- debug **(Temporarily save results when debug mode on)**
+- frontend **(Out of created by react)**
+- model
+  | - yolo **(trained yolo models)**
+  | - `parseq.pt` **(trained parseq model)**
+- nginx.conf.d
+  | - ssl **(configurations and certificates)**
+  | - `default.conf` **(sub blocks in configuration of nginx http)**
+- parseq **(library reference)**
+- public **(folder of exposed http request and put generated pictures from RTMP)**
+- `app.py` **(Main python starter)**
+- `docker-compose.yml` 
+- `Dockerfile`
+- `Dockerfile-celery`
+- `Dockerfile-observer`
+- `socketctl.py` **(Web socket controller)**
 
