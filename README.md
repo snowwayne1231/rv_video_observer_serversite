@@ -177,20 +177,20 @@ docker-compose -f docker-compose.yml -f uat-docker-compose.yml up -d
 ## 4. Folder Construct
 - bg_celery **(使用celery多線處理 rtmp 任務)**
 - classes 
-  | - `data.py`  **(儲存/取用data )**
-  | - `internet.py` **(外部request functions)**
-  | - `ocr.py` **(OCR algorithms of handling frame from RTMP)**
-  | - `timeformula.py` **(Functions of Specific time formats)**
+  - | - `data.py`  **(儲存/取用data )**
+  - | - `internet.py` **(外部request functions)**
+  - | - `ocr.py` **(OCR algorithms of handling frame from RTMP)**
+  - | - `timeformula.py` **(Functions of Specific time formats)**
 
 - configs **(Main service config)**
 - debug **(Temporarily save results when debug mode on)**
 - frontend **(Out of created by react)**
 - model
-  | - yolo **(trained yolo models)**
-  | - `parseq.pt` **(trained parseq model)**
+  - | - yolo **(trained yolo models)**
+  - | - `parseq.pt` **(trained parseq model)**
 - nginx.conf.d
-  | - ssl **(configurations and certificates)**
-  | - `default.conf` **(sub blocks in configuration of nginx http)**
+  - | - ssl **(configurations and certificates)**
+  - | - `default.conf` **(sub blocks in configuration of nginx http)**
 - parseq **(library reference)**
 - public **(folder of exposed http request and put generated pictures from RTMP)**
 - `app.py` **(Main python starter)**
